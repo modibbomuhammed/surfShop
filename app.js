@@ -1,14 +1,26 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session');
+// const bodyParser = require('body-parser');
+const passport = require('passport');
+const localStrategy = require('passport-local');
+const User = require('./models/user');
+const mongoose = require('mongoose');
 
-var indexRouter 	= require('./routes/index');
-var postRouter 		= require('./routes/posts');
-var reviewRouter	= require('./routes/reviews');
+// require routes
+const indexRouter 	= require('./routes/index');
+const postRouter 		= require('./routes/posts');
+const reviewRouter	= require('./routes/reviews');
 
-var app = express();
+const app = express();
+
+// conect to mongodb
+mongoose.connect('mongodb://localhost:27017/surfshopapp', { useNewUrlParser: true, useUnifiedTopology: true})
+.then(()=> console.log('connected to the db'))
+.catch((err)=> console.log(`failed to connnect due to ${err}`))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -20,6 +32,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// session config
+app.use(session({
+  secret: 'Modash is in control',
+  resave: false,
+  saveUninitialized: true,
+}))
+
+// CHANGE: USE "createStrategy" INSTEAD OF "authenticate"
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
+// mount routes
 app.use('/', indexRouter);
 app.use('/posts', postRouter);
 app.use('/posts/:id/reviews', reviewRouter);
