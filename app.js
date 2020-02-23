@@ -18,6 +18,7 @@ const reviewRouter	= require('./routes/reviews');
 const app = express();
 
 // conect to mongodb
+mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost:27017/surfshopapp', { useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=> console.log('connected to the db'))
 .catch((err)=> console.log(`failed to connnect due to ${err}`))
@@ -40,6 +41,7 @@ app.use(session({
   saveUninitialized: true,
 }))
 
+app.use(passport.initialize())
 // CHANGE: USE "createStrategy" INSTEAD OF "authenticate"
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
