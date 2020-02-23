@@ -1,5 +1,5 @@
 const User = require('../models/user');
-
+const passport = require('passport');
 
 
 module.exports = {
@@ -12,5 +12,21 @@ module.exports = {
 			let newguy = await User.register(newUser, req.body.password);
 			console.log(newguy);
 			res.redirect('/')
+	},
+	
+	postLogin(req,res,next){
+		passport.authenticate('local', {
+		// failureFlash: true,
+		failureRedirect: '/',
+		// successFlash: true,
+		successRedirect: '/login'
+		})(req,res,next);	
+	},
+	
+	postLogout(req,res,next){
+		req.logout();
+		res.send('logout route')
 	}
+	
+	
 }

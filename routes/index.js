@@ -1,11 +1,10 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { postRegister } = require('../controllers/index');
-const { errorHandler } = require('../middleware/index');
-const { sayHi } = require('../middleware');
+const { postRegister, postLogin, postLogout } = require('../controllers');
+const { errorHandler } = require('../middleware');
 
-// console.log(sayHi, errorHandler, "from here");
+console.log("from here");
 /* GET home page. */
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'SurfShop - Home Page' });
@@ -25,18 +24,10 @@ router.get('/login', (req, res, next) => {
 });
 
 // post /login
-router.post('/login', passport.authenticate('local', {
-	// failureFlash: true,
-	failureRedirect: '/',
-	// successFlash: true,
-	successRedirect: '/login'
-}))
+router.post('/login', postLogin);
 
 // Get /logout
-router.get('/logout', (req,res,next) =>{
-	req.logout();
-	res.send('logout route')
-})
+router.get('/logout', postLogout);
 
 
 // get /profile
