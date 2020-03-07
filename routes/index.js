@@ -4,7 +4,6 @@ const router = express.Router();
 const { postRegister, postLogin, postLogout } = require('../controllers');
 const { asyncErrorHandler } = require('../middleware');
 
-console.log("from here");
 /* GET home page. */
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'SurfShop - Home Page' });

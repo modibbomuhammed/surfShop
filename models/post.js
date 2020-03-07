@@ -4,7 +4,7 @@ let postSchema = new mongoose.Schema({
 	title: String,
 	price: String, 	
 	description: String,
-	image: [ String ],
+	image: [{url: String, public_id: String}],
 	posts: String,
 	location: String,
 	lat: Number,

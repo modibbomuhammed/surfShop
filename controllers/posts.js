@@ -1,4 +1,15 @@
+// require('dotenv').config();
 const Post = require('../models/post');
+const cloudinary = require('cloudinary').v2;
+
+// cloudinary config
+cloudinary.config({ 
+  cloud_name: 'modibbomuhammed', 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET 
+});
+
+
 
 module.exports = {
 	async getPosts(req,res,next){
@@ -11,8 +22,16 @@ module.exports = {
 	},
 	
 	async createPost(req,res,next){
-		let newPost = await Post.create(req.body);
-		res.redirect(`/posts/${newPost._id}`)
+		req.body.image = []
+		for(let file of req.files){
+			let result = await cloudinary.uploader.upload(file.path)
+			req.body.image.push({
+				url: result.secure_url,
+				public_id: result.public_id
+			})	
+		}
+		 let newPost = await Post.create(req.body);
+		 res.redirect(`/posts/${newPost._id}`)
 	},
 	
 	async showPost(req,res,next){

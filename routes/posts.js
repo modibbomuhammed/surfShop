@@ -1,5 +1,28 @@
 const express = require('express');
 const router = express.Router();
+const multer  = require('multer');
+const path = require('path');
+
+
+// configure multer
+const storage = multer.diskStorage({
+	filename: (req,file,cb) => {
+		cb(null, `${file.fieldname} - ${Date.now()}`)	
+	},
+	
+})
+const upload = multer({
+	storage,
+	fileFilter: function (req, file, callback) {
+        var ext = path.extname(file.originalname);
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+            return callback(new Error('Only images are allowed'))
+        }
+        callback(null, true)
+    }
+}).array('images', 4)
+
+
 const { asyncErrorHandler } = require('../middleware');
 const { 
 	getPosts, 
@@ -19,7 +42,7 @@ router.get('/', asyncErrorHandler(getPosts));
 router.get('/new', newPost);
 
 // post create /posts
-router.post('/', asyncErrorHandler(createPost));
+router.post('/', upload , asyncErrorHandler(createPost));
 
 // get show /posts/:id
 router.get('/:id', asyncErrorHandler(showPost));

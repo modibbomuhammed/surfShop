@@ -9,6 +9,15 @@
 <div><a href="/posts/<%= post.id %>/edit">Edit Post</a></div>
 
 <div>
+	<h2>Images</h2>
+	<% post.image.forEach(val => { %>
+		<img src='<%= val.url %>' width='200px'>
+	<% }) %>
+</div>
+
+
+
+<div>
 	<form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
 		<button>DELETE</button>
 	</form>
