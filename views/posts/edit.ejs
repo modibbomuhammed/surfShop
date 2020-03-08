@@ -17,7 +17,7 @@
 			<li><img alt='myImages' src='<%= val.url %>' width="200px">
 			<label for='image<%= index %>'>
 				Delete? 
-				<input type='checkbox' name='picture' id='image<%= index %>' value='<%= val.public_id %>'  class='imageDeleteCheckbox'>
+				<input type='checkbox' name='pictures[]' id='image<%= index %>' value='<%= val.public_id %>'  class='imageDeleteCheckbox'>
 			</label>
 			</li>
 		

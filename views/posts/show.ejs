@@ -1,3 +1,9 @@
+<head>
+	<title>Show Page</title>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />	
+</head>
+
+
 <h1>
 	Show Page
 </h1>
@@ -7,7 +13,9 @@
 <div><%= post.description %></div>
 <div><%= post.location %></div>
 <div><a href="/posts/<%= post.id %>/edit">Edit Post</a></div>
-
+<div id='mymap'>
+	
+</div>
 <div>
 	<h2>Images</h2>
 	<% post.image.forEach(val => { %>
@@ -22,3 +30,4 @@
 		<button>DELETE</button>
 	</form>
 </div>
+
