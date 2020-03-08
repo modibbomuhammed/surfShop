@@ -45,8 +45,28 @@ module.exports = {
 	},
 	
 	async updatePost(req,res,next){
-		let update = await Post.findByIdAndUpdate(req.params.id, req.body, {new: true})
-		res.redirect(`/posts/${update.id}`);
+		
+		let foundPost = await Post.findById(req.params.id);
+		let images = []
+		for(let x of foundPost.image){
+			images.push(x.public_id)
+		}
+		
+		await cloudinary.api.delete_resources(images);
+		req.body.image = []
+		for(let file of req.files){
+			let result = await cloudinary.uploader.upload(file.path)
+			req.body.image.push({
+				url: result.secure_url,
+				public_id: result.public_id
+			}) 
+		}
+		let updatePost = await Post.findByIdAndUpdate(req.params.id, req.body, {new: true})
+		res.redirect(`/posts/${updatePost.id}`)
+		
+		// 	what it use to be	
+		// let update = await Post.findByIdAndUpdate(req.params.id, req.body, {new: true})
+		// res.redirect(`/posts/${update.id}`);
 	},
 	
 	async postDelete(req,res,next){

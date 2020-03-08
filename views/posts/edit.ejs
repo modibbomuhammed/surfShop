@@ -4,11 +4,44 @@
 </h1>
 
 
-<form action="/posts/<%= foundPost._id %>?_method=PUT" method="POST">
+<form action="/posts/<%= foundPost._id %>?_method=PUT" method="POST" enctype='multipart/form-data' id='editForm'>
   <input type="text" name="title" value='<%= foundPost.title %>' >
     <input type="text" name="price" value='<%= foundPost.price %>'>
     <textarea id="" col="30" name="description" rows="10"><%= foundPost.description %></textarea>
 
+	<input type='file' name='image' multiple id='imageUpload'>
     <input type="text" name="location" value='<%= foundPost.location %>'>
+	<h4>Current Photos</h4>
+	<ul>
+		<% foundPost.image.forEach((val,index) => { %>
+			<li><img alt='myImages' src='<%= val.url %>' width="200px">
+			<label for='image<%= index %>'>
+				Delete? 
+				<input type='checkbox' name='picture' id='image<%= index %>' value='<%= val.public_id %>'  class='imageDeleteCheckbox'>
+			</label>
+			</li>
+		
+			
+		<% }) %>
+	</ul>
     <input type="submit">
 </form>
+
+
+
+<script>
+	
+	let editForm = document.getElementById('editForm');
+		editForm.addEventListener('submit', (event) => {
+			let imageUpload = document.getElementById('imageUpload')
+			let lengthOfUploads = imageUpload.files.length
+			let img = document.querySelectorAll('.imageDeleteCheckBox:checked')
+			let numOfDeletedImages = img.length
+			let numOfExistImages = <%= foundPost.image.length %>
+			if(numOfExistImages - numOfDeletedImages + lengthOfUploads > 4){
+				event.preventDefault()
+				alert('You can\'t have more than 4 pictures')
+			}
+		})	
+	
+</script>

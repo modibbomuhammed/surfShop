@@ -20,7 +20,7 @@ const upload = multer({
         }
         callback(null, true)
     }
-}).array('images', 4)
+}).array('image', 4)
 
 
 const { asyncErrorHandler } = require('../middleware');
@@ -51,7 +51,7 @@ router.get('/:id', asyncErrorHandler(showPost));
 router.get('/:id/edit', asyncErrorHandler(editPost));
 
 // Update /posts/:id Update
-router.put('/:id', asyncErrorHandler(updatePost));
+router.put('/:id', upload, asyncErrorHandler(updatePost));
 
 // Delete /posts/:id delete
 router.delete('/:id', asyncErrorHandler(postDelete));
