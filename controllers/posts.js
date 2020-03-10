@@ -58,6 +58,7 @@ module.exports = {
 		}
 		
 		 let newPost = await Post.create(req.body);
+		req.session.success = 'You have succesfully created a post';
 		 res.redirect(`/posts/${newPost._id}`)
 	},
 	
@@ -68,7 +69,7 @@ module.exports = {
 	
 	async editPost(req,res,next){
 		let foundPost = await Post.findById(req.params.id)
-		res.render('posts/edit', { foundPost });
+		res.render('posts/edit', { foundPost, title: 'Post Edit Page' });
 	},
 	
 	async updatePost(req,res,next){

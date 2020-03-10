@@ -1,4 +1,4 @@
-
+<% layout('layouts/boilerplate') -%>
 <h1>
   Edit Posts Page
 </h1>
@@ -27,21 +27,5 @@
     <input type="submit">
 </form>
 
-
-
-<script>
-	
-	let editForm = document.getElementById('editForm');
-		editForm.addEventListener('submit', (event) => {
-			let imageUpload = document.getElementById('imageUpload')
-			let lengthOfUploads = imageUpload.files.length
-			let img = document.querySelectorAll('.imageDeleteCheckBox:checked')
-			let numOfDeletedImages = img.length
-			let numOfExistImages = <%= foundPost.image.length %>
-			if(numOfExistImages - numOfDeletedImages + lengthOfUploads > 4){
-				event.preventDefault()
-				alert('You can\'t have more than 4 pictures')
-			}
-		})	
-	
-</script>
+<script>let numOfExistImages = <%= foundPost.image.length %></script>
+<script src='/javascripts/edit-post.js'></script>
