@@ -1,6 +1,12 @@
 // require('dotenv').config();
+const fetch = require('node-fetch');
 const Post = require('../models/post');
 const cloudinary = require('cloudinary').v2;
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const baseClient = ({ accessToken: process.env.MAPBOX_API_KEY})
+
+const geocoder = mbxGeocoding(baseClient)
+
 
 // cloudinary config
 cloudinary.config({ 
@@ -22,6 +28,26 @@ module.exports = {
 	},
 	
 	async createPost(req,res,next){
+	
+		// method using node-fetch with mapbox
+// 	let response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${req.body.location}.json?access_token=pk.eyJ1IjoibW9kaWJib211aGFtbWVkIiwiYSI6ImNrN2o4bW1rajA5cnEzZXJ3Z2tjcHh0eG4ifQ.HhXWW8u_prQskpDfMM_43g`
+// )
+// 	let result = await response.json()
+// 	console.log(result.features[0].geometry.coordinates)
+		
+// 			req.body.lat = result.features[0].geometry.coordinates[0];
+// 			req.body.lng = result.features[0].geometry.coordinates[1];
+		
+
+				let response = await geocoder.forwardGeocode({
+									query: req.body.location,
+									limit: 1
+									})
+									.send()
+					const match = response.body
+					console.log(match.features[0].center)
+					 req.body.coordinates = match.features[0].geometry.coordinates
+
 		req.body.image = []
 		for(let file of req.files){
 			let result = await cloudinary.uploader.upload(file.path)
@@ -30,6 +56,7 @@ module.exports = {
 				public_id: result.public_id
 			})	
 		}
+		
 		 let newPost = await Post.create(req.body);
 		 res.redirect(`/posts/${newPost._id}`)
 	},
@@ -47,6 +74,17 @@ module.exports = {
 	async updatePost(req,res,next){
 		
 		let foundPost = await Post.findById(req.params.id);
+		
+		if(req.body.location !== foundPost.location){
+			let response = await geocoder.forwardGeocode({
+					  			query: req.body.location,
+			  					limit: 1
+								})
+			  					.send()
+			const match = response.body
+			foundPost.coordinates = match.features[0].center
+			foundPost.location = req.body.location
+		} 
 		
 		if(req.body.pictures && req.body.pictures.length){
 			let images = []
@@ -74,11 +112,11 @@ module.exports = {
 			
 		}
 		
-		let {title, description, price, location } = req.body
+		let {title, description, price } = req.body
 		foundPost.title = title
 		foundPost.description = description
 		foundPost.price = price
-		foundPost.location = location
+		
 		let updatedPost = await foundPost.save({new:true})
 			
 		res.redirect(`/posts/${updatedPost.id}`)

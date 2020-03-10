@@ -12,6 +12,8 @@ const localStrategy = require('passport-local');
 const User = require('./models/user');
 const mongoose = require('mongoose');
 
+
+
 // require routes
 const indexRouter 	= require('./routes/index');
 const postRouter 		= require('./routes/posts');
@@ -21,7 +23,7 @@ const app = express();
 
 // conect to mongodb
 mongoose.set('useCreateIndex', true);
-mongoose.connect('mongodb://localhost:27017/surfshopapp', { useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect('mongodb://localhost:27017/surfshopapp-mapbox', { useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=> console.log('connected to the db'))
 .catch((err)=> console.log(`failed to connnect due to ${err}`))
 
@@ -29,13 +31,15 @@ mongoose.connect('mongodb://localhost:27017/surfshopapp', { useNewUrlParser: tru
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+
+
 app.use(methodOverride('_method'));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(express.static('public'))
 
 // session config
 app.use(session({
