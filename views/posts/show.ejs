@@ -8,6 +8,7 @@
 <div><%= post.price %></div>
 <div><%= post.description %></div>
 <div><%= post.location %></div>
+
 			
 <div><a href="/posts/<%= post.id %>/edit">Edit Post</a></div>
 	
@@ -27,5 +28,31 @@
 	</form>
 </div>
 
-<div id='map' style='height: 500px; width: 700px' ></div>
+<h2>Reviews</h2>
+<h3>
+	Create a review!!
+</h3>
+
+<form action='/posts/<%= post._id %>/reviews' method='POST'>
+	<textarea name='body' placeholder='What do you think??' required></textarea>
+	<label>
+		Rating: <input type='number' name='ratings' min='1' max='5' step='1' required>
+	</label>
+	
+	<button>
+		Submit
+	</button>	
+</form>
+
+<% if(post.reviews.length){ %>
+		<ul>
+			<% post.reviews.forEach((val) =>{ %>
+				<li><p>Comment: <%= val.body %></p><p>Ratings: <%= val.ratings %></p></li>
+			<% })%>
+		</ul>
+
+ <% } %>
+
+
+<div id='map'></div>
 

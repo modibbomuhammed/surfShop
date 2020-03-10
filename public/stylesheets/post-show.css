@@ -5,10 +5,11 @@ body {
       }
 
       #map {
-        position: absolute;
-        top: 550;
-        bottom: 0;
-        width: 100%;
+        position: relative;
+        /* top: 1850; */
+        /* bottom: 0; */
+        width: 400px;
+		height: 400px;
       }
 		
 		.marker {
