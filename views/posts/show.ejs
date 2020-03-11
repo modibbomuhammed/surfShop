@@ -35,9 +35,22 @@
 
 <form action='/posts/<%= post._id %>/reviews' method='POST'>
 	<textarea name='body' placeholder='What do you think??' required></textarea>
-	<label>
-		Rating: <input type='number' name='ratings' min='1' max='5' step='1' required>
-	</label>
+	
+						<fieldset class="starability-basic">
+						  <legend>Rating:</legend>
+				<input type="radio" id="rate0" class="input-no-rate" name="ratings" value="0" checked aria-label="No rating." />
+						  <input type="radio" id="rate1" name="ratings" value="1" />
+						  <label for="rate1" title="Terrible">1 star</label>
+						  <input type="radio" id="rate2" name="ratings" value="2" />
+						  <label for="rate2" title="Not good">2 stars</label>
+						  <input type="radio" id="rate3" name="ratings" value="3" />
+						  <label for="rate3" title="Average">3 stars</label>
+						  <input type="radio" id="rate4" name="ratings" value="4" />
+						  <label for="rate4" title="Very good">4 stars</label>
+						  <input type="radio" id="rate5" name="ratings" value="5" />
+						  <label for="rate5" title="Amazing">5 stars</label>
+						</fieldset>
+				
 	
 	<button>
 		Submit
@@ -56,9 +69,29 @@
 					
 					<form action='/posts/<%= post.id %>/reviews/<%= val.id %>?_method=PUT' method='POST' class='edit-form'>
 						<textarea name='body'><%= val.body %></textarea>
-						<label>Rating<input type='number' name='ratings' step='1' min='1' max='5' value='<%= val.ratings %>'></label>
+						<fieldset class="starability-basic">
+						  <legend>Rating:</legend>
+				<input type="radio" id="edit-rate0" class="input-no-rate" name="ratings" value="0" checked aria-label="No rating." />
+						  <input type="radio" id="edit-rate1" name="ratings" value="1" />
+						  <label for="edit-rate1" title="Terrible">1 star</label>
+						  <input type="radio" id="edit-rate2" name="ratings" value="2" />
+						  <label for="edit-rate2" title="Not good">2 stars</label>
+						  <input type="radio" id="edit-rate3" name="ratings" value="3" />
+						  <label for="edit-rate3" title="Average">3 stars</label>
+						  <input type="radio" id="edit-rate4" name="ratings" value="4" />
+						  <label for="edit-rate4" title="Very good">4 stars</label>
+						  <input type="radio" id="edit-rate5" name="ratings" value="5" />
+						  <label for="edit-rate5" title="Amazing">5 stars</label>
+						</fieldset>
+				
 						<input type='submit' value='update'>
+						
+						
 					</form>
+					
+					<script> $("#edit-rate" + <%= val.rating %>).prop('checked', true) 
+						
+					</script>
 					
 					<form action='/posts/<%= post.id %>/reviews/<%= val.id %>?_method=DELETE' method='POST'>
 						<input type='submit' value='Delete'>
