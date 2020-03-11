@@ -65,7 +65,11 @@ module.exports = {
 	async showPost(req,res,next){
 		let post = await Post.findById(req.params.id).populate({
 			path: 'reviews',
-			options: { sort: { '_id': -1} }
+			options: { sort: { '_id': -1} },
+			populate: {
+				path: 'author',
+				model: 'User'
+			}
 		})
 		res.render('posts/show', { post });
 	},
@@ -136,6 +140,7 @@ module.exports = {
 		}
 		await post.remove();
 		// await Post.findByIdAndDelete(req.params.id);
+		req.session.success = 'Post was successfully deleted!!'
 		res.redirect('/posts');
 	}
 }

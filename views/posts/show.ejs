@@ -47,7 +47,28 @@
 <% if(post.reviews.length){ %>
 		<ul>
 			<% post.reviews.forEach((val) =>{ %>
-				<li><p>Comment: <%= val.body %></p><p>Ratings: <%= val.ratings %></p></li>
+				<li><p>Comment: <%= val.body %></p><p>Ratings: <%= val.ratings %></p><p>
+					<p>by <%= val.author.username %></p></li>
+			
+				<div>
+					<% if(currentUser.username === val.author.username ){ %>
+					<button class='toggle-edit-form'>Edit</button>
+					
+					<form action='/posts/<%= post.id %>/reviews/<%= val.id %>?_method=PUT' method='POST' class='edit-form'>
+						<textarea name='body'><%= val.body %></textarea>
+						<label>Rating<input type='number' name='ratings' step='1' min='1' max='5' value='<%= val.ratings %>'></label>
+						<input type='submit' value='update'>
+					</form>
+					
+					<form action='/posts/<%= post.id %>/reviews/<%= val.id %>?_method=DELETE' method='POST'>
+						<input type='submit' value='Delete'>
+					</form>
+					
+					<% } %>
+
+				</div>
+			
+			<hr>
 			<% })%>
 		</ul>
 

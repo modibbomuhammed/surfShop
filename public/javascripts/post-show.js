@@ -34,4 +34,11 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibW9kaWJib211aGFtbWVkIiwiYSI6ImNrN2o4bW1rajA5c
 	.setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
     .setHTML('<h3>' + post.title + '</h3><p>' + post.location + '</p>'))
     .addTo(map);
+
+
+$('.toggle-edit-form').on('click', function(){
+	$(this).text() == 'Edit' ? $(this).text('Cancel') : $(this).text('Edit')
+	$(this).siblings('.edit-form').toggle()
+})
+
 		

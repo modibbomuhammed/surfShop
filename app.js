@@ -39,6 +39,16 @@ app.use(session({
 
 // set title variable
 app.use(function(req,res,next){
+	req.user = {
+		 '_id' : "5e68f90edfffd840396c9360",
+	'username' : 'ash',
+	}
+	
+	// req.user = {
+	// 		"_id" : "5e68f922dfffd840396c9361",
+	// "username" : "ash2",
+	// }
+	res.locals.currentUser = req.user;
 	res.locals.title = 'Surf-Shop'
 	res.locals.success = req.session.success || ''
 	delete req.session.success
@@ -58,7 +68,7 @@ app.set('view engine', 'ejs');
 app.use(methodOverride('_method'));
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'))
@@ -77,7 +87,7 @@ app.use('/posts', postRouter);
 app.use('/posts/:id/reviews', reviewRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function(req, res, next, dummie) {
   next(createError(404));
 });
 
