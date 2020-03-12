@@ -36,3 +36,7 @@ a {
 .edit-form{
 	display: none;
 }
+
+.clear-rating{
+	display: block;
+}

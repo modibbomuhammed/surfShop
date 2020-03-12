@@ -40,5 +40,10 @@ $('.toggle-edit-form').on('click', function(){
 	$(this).text() == 'Edit' ? $(this).text('Cancel') : $(this).text('Edit')
 	$(this).siblings('.edit-form').toggle()
 })
+ 
 
+$('.clear-rating').on('click', function(e){
+		$(this).siblings('.input-no-rate').click();
+		// $('.input-no-rate').prop('checked', true) this works but it clears the rating for both!
+	})
 		
