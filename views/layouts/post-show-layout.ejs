@@ -11,6 +11,7 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 	<link rel='stylesheet' href='/stylesheets/post-show.css' />
 	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/starability/2.4.2/starability-css/starability-basic.css' > 
+	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css'> 
 	<!-- <link rel='stylesheet' href='/stylesheets/starability-basic.min.css'> -->
 	  <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -29,6 +30,7 @@
 	<script>
 	
 	var post = <%- JSON.stringify(post) %>
+	var mapBoxToken = '<%= mapBoxToken %>'
 	</script>
 	
 	<script src='/javascripts/post-show.js'></script>

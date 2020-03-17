@@ -8,10 +8,31 @@
 <div><%= post.price %></div>
 <div><%= post.description %></div>
 <div><%= post.location %></div>
+<div><% for(let i = 0; i < 5 ; i++){ %>
+		<% if(i < floorRating ){ %>
+			  <i class="fas fa-star"></i>
+		<% } else if( (post.avgRating - i) > 0 && (post.avgRating - i ) < 1){ %>
+				<i class="fas fa-star-half-alt"></i>
+		<% } else { %>
+			<i class="far fa-star"></i>
+		<% } %>
+	<% } %>
+	<%= `${post.avgRating} star${floorRating > 1 ? 's' : ''} rating` %>
+</div>
 
-			
+
+<% if(currentUser && currentUser.username === post.author.username ){ %>
 <div><a href="/posts/<%= post.id %>/edit">Edit Post</a></div>
-	
+<div>
+	<form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
+		<button>DELETE</button>
+	</form>
+</div>
+<% } %>
+
+
+
+
 
 <div>
 	<h2>Images</h2>
@@ -21,18 +42,10 @@
 </div>
 
 
-
-<div>
-	<form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
-		<button>DELETE</button>
-	</form>
-</div>
-
 <h2>Reviews</h2>
-<h3>
-	Create a review!!
-</h3>
+<% if(currentUser){ %>
 
+<h3>Create a review!!</h3>
 <form action='/posts/<%= post._id %>/reviews' method='POST'>
 	<textarea name='body' placeholder='What do you think??' required></textarea>
 	
@@ -58,6 +71,13 @@
 	</button>	
 </form>
 
+<% } else { %>
+
+<h2><a href='/login?returnTo=true'>Create a review!!</a></h2>
+
+<% } %>
+
+
 <% if(post.reviews.length){ %>
 		<ul>
 			<% post.reviews.forEach((val) =>{ %>
@@ -65,7 +85,7 @@
 					<p>by <%= val.author.username %></p></li>
 			
 				<div>
-					<% if(currentUser.username === val.author.username ){ %>
+					<% if(currentUser && currentUser.username === val.author.username ){ %>
 					<button class='toggle-edit-form'>Edit</button>
 					
 					<form action='/posts/<%= post.id %>/reviews/<%= val.id %>?_method=PUT' method='POST' class='edit-form'>

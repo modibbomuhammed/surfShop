@@ -13,7 +13,6 @@ module.exports = {
 		}
 // 		he used a filter in his code
 		// let hasReviewed = post.reviews.filter(review => review.author.equals(req.user._id)).length
-		
 		req.body.author = req.user._id
 		let reviews = await Review.create(req.body) 
 			post.reviews.push(reviews);

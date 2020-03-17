@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true});
 const { createReview, updateReview, deleteReview } = require('../controllers/reviews');
-const { asyncErrorHandler, isReviewAuthor } = require('../middleware');
+const { asyncErrorHandler, isReviewAuthor, isLoggedIn } = require('../middleware');
 
 
 
-router.post('/', asyncErrorHandler(createReview));
+router.post('/', isLoggedIn, asyncErrorHandler(createReview));
 
 // Update /posts/:id/reviews/:review_id Update
 router.put('/:review_id', isReviewAuthor, asyncErrorHandler(updateReview));

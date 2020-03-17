@@ -1,26 +1,22 @@
-// require('dotenv').config();
 const fetch = require('node-fetch');
 const Post = require('../models/post');
-const cloudinary = require('cloudinary').v2;
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const baseClient = ({ accessToken: process.env.MAPBOX_API_KEY})
+const mapBoxToken = process.env.MAPBOX_API_KEY
+const baseClient = ({ accessToken: mapBoxToken})
 
 const geocoder = mbxGeocoding(baseClient)
-
-
-// cloudinary config
-cloudinary.config({ 
-  cloud_name: 'modibbomuhammed', 
-  api_key: process.env.CLOUDINARY_API_KEY, 
-  api_secret: process.env.CLOUDINARY_API_SECRET 
-});
-
-
+const { cloudinary } = require('../cloudinary');
 
 module.exports = {
 	async getPosts(req,res,next){
-		let posts = await Post.find({})
-		res.render('posts/index', { posts })
+		let posts = await Post.paginate({}, {
+			page: req.query.page || 1,
+			limit: 10,
+			sort: { '_id': -1} // '-_id'
+		})
+		posts.page = Number(posts.page)
+		// let posts = await Post.find({})
+		res.render('posts/index', { posts, mapBoxToken })
 	},
 	
 	newPost(req,res,next){
@@ -28,7 +24,6 @@ module.exports = {
 	},
 	
 	async createPost(req,res,next){
-	
 		// method using node-fetch with mapbox
 // 	let response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${req.body.location}.json?access_token=pk.eyJ1IjoibW9kaWJib211aGFtbWVkIiwiYSI6ImNrN2o4bW1rajA5cnEzZXJ3Z2tjcHh0eG4ifQ.HhXWW8u_prQskpDfMM_43g`
 // )
@@ -45,21 +40,26 @@ module.exports = {
 									})
 									.send()
 					const match = response.body
-					console.log(match.features[0].center)
-					 req.body.coordinates = match.features[0].geometry.coordinates
-
+					// console.log(match.features[0].center, 'from the createpost controller')
+					 req.body.geometry = match.features[0].geometry
+					req.body.author = req.user._id
+	
 		req.body.image = []
 		for(let file of req.files){
-			let result = await cloudinary.uploader.upload(file.path)
+			// let result = await cloudinary.uploader.upload(file.path)
 			req.body.image.push({
-				url: result.secure_url,
-				public_id: result.public_id
+				url: file.secure_url,
+				public_id: file.public_id
 			})	
 		}
 		
-		 let newPost = await Post.create(req.body);
+		 // let newPost = await Post.create(req.body);
+		let post = new Post(req.body);
+		post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
+		await post.save();
+		
 		req.session.success = 'You have succesfully created a post';
-		 res.redirect(`/posts/${newPost._id}`)
+		 res.redirect(`/posts/${post._id}`)
 	},
 	
 	async showPost(req,res,next){
@@ -70,18 +70,19 @@ module.exports = {
 				path: 'author',
 				model: 'User'
 			}
-		})
-		res.render('posts/show', { post });
+		}).populate('author')
+		
+		let floorRating = post.calculateAvgRating()
+		res.render('posts/show', { post, floorRating, mapBoxToken });
 	},
 	
-	async editPost(req,res,next){
-		let foundPost = await Post.findById(req.params.id)
-		res.render('posts/edit', { foundPost, title: 'Post Edit Page' });
+	editPost(req,res,next){
+		res.render('posts/edit');
 	},
 	
 	async updatePost(req,res,next){
 		
-		let foundPost = await Post.findById(req.params.id);
+		let foundPost = res.locals.foundPost;
 		
 		if(req.body.location !== foundPost.location){
 			let response = await geocoder.forwardGeocode({
@@ -90,7 +91,7 @@ module.exports = {
 								})
 			  					.send()
 			const match = response.body
-			foundPost.coordinates = match.features[0].center
+			foundPost.geometry = match.features[0].geometry
 			foundPost.location = req.body.location
 		} 
 		
@@ -111,10 +112,10 @@ module.exports = {
 		
 		if(req.files){
 			for(let file of req.files){
-				let result = await cloudinary.uploader.upload(file.path)
+				// let result = await cloudinary.uploader.upload(file.path)
 				foundPost.image.push({
-					url: result.secure_url,
-					public_id: result.public_id
+					url: file.secure_url,
+					public_id: file.public_id
 				}) 
 			}
 			
@@ -124,6 +125,8 @@ module.exports = {
 		foundPost.title = title
 		foundPost.description = description
 		foundPost.price = price
+		foundPost.properties.description = `<strong><a href="/posts/${foundPost._id}">${foundPost.title}</a></strong><p>${foundPost.location}</p><p>${foundPost.description.substring(0, 20)}...</p>`;
+		
 		
 		let updatedPost = await foundPost.save({new:true})
 			
@@ -134,7 +137,9 @@ module.exports = {
 	},
 	
 	async postDelete(req,res,next){
-		let post = await Post.findById(req.params.id)
+		// let post = await Post.findById(req.params.id)
+		let post = res.locals.foundPost
+		eval(require('locus'))
 		for(let image of post.image){
 			await cloudinary.uploader.destroy(image.public_id)
 		}

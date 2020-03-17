@@ -1,38 +1,30 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { postRegister, postLogin, postLogout } = require('../controllers');
-const { asyncErrorHandler } = require('../middleware');
+const { postRegister, postLogin, postLogout, landingPage, getRegister, getLogin, getProfile } = require('../controllers');
+const { asyncErrorHandler, isLoggedIn  } = require('../middleware');
 
 /* GET home page. */
-router.get('/', (req, res, next) => {
-  res.render('index', { title: 'SurfShop - Home Page' });
-});
+router.get('/', asyncErrorHandler(landingPage));
 
 // GET /register
-router.get('/register', (req, res, next) => {
-  res.send('GET /register');
-});
+router.get('/register', getRegister);
 
 // post /register
 router.post('/register', asyncErrorHandler(postRegister));
 
 // Get /login
-router.get('/login', (req, res, next) => {
-  res.send('/login');
-});
+router.get('/login', getLogin);
 
 // post /login
-router.post('/login', postLogin);
+router.post('/login', asyncErrorHandler(postLogin));
 
 // Get /logout
 router.get('/logout', postLogout);
 
 
 // get /profile
-router.get('/profile', (req, res, next) => {
-  res.send('profile');
-});
+router.get('/profile', isLoggedIn, asyncErrorHandler(getProfile));
 
 // PUT /profile/:user_id
 router.put('/profile/:user_id', (req, res, next) => {
