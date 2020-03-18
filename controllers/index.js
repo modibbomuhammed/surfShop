@@ -103,4 +103,20 @@ module.exports = {
 		res.redirect('/profile');
 	},
 	
+	getForgotPw(res,req,next){
+		
+	},
+	
+	async putForgotPw(req,res,next){
+		
+	},
+	
+	async getReset(req,res,next){
+		
+	},
+	
+	async putReset(req,res,next){
+		
+	}
+	
 }
