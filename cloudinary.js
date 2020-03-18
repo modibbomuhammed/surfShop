@@ -22,7 +22,22 @@ const storage = cloudinaryStorage({
   }
 });
 
+const profileStorage = cloudinaryStorage({
+  cloudinary,
+  folder: 'surf-shop-profile-pics',
+  allowedFormats: ['jpeg', 'jpg', 'png'],
+  filename: function (req, file, cb) {
+  	let buf = crypto.randomBytes(16);
+  	buf = buf.toString('hex');
+  	let uniqFileName = file.originalname.replace(/\.jpeg|\.jpg|\.png/ig, '');
+  	uniqFileName += buf;
+    cb(undefined, uniqFileName );
+  }
+});
+
+
 module.exports = {
 	cloudinary,
-	storage
+	storage,
+	profileStorage
 }

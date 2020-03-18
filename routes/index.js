@@ -1,8 +1,12 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { postRegister, postLogin, postLogout, landingPage, getRegister, getLogin, getProfile } = require('../controllers');
-const { asyncErrorHandler, isLoggedIn  } = require('../middleware');
+const multer = require('multer')
+const { profileStorage } = require('../cloudinary');
+const { postRegister, postLogin, postLogout, landingPage, getRegister, getLogin, getProfile, updateProfile } = require('../controllers');
+const { asyncErrorHandler, isLoggedIn, isValidPassword, changePassword  } = require('../middleware');
+const upload = multer({ storage: profileStorage }).single('image')
+
 
 /* GET home page. */
 router.get('/', asyncErrorHandler(landingPage));
@@ -11,7 +15,7 @@ router.get('/', asyncErrorHandler(landingPage));
 router.get('/register', getRegister);
 
 // post /register
-router.post('/register', asyncErrorHandler(postRegister));
+router.post('/register', upload, asyncErrorHandler(postRegister));
 
 // Get /login
 router.get('/login', getLogin);
@@ -27,9 +31,7 @@ router.get('/logout', postLogout);
 router.get('/profile', isLoggedIn, asyncErrorHandler(getProfile));
 
 // PUT /profile/:user_id
-router.put('/profile/:user_id', (req, res, next) => {
-  res.send('update user data');
-});
+router.put('/profile/:userid', isLoggedIn, upload, asyncErrorHandler(isValidPassword), asyncErrorHandler(changePassword), asyncErrorHandler(updateProfile));
 
 // forgot password 
 router.get('/forgot', (req, res, next) => {

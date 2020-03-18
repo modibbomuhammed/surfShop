@@ -5,7 +5,10 @@ let userSchema = new mongoose.Schema({
 	email: {type: String, required: true, unique: true}, 
 	// password: String, 						added by default from passport local mongoose
 	username: {type: String, required: true, unique: true},
-	image: String,
+	image: {
+		secure_url: {type: String, default: '/images/default-profile.jpg'},
+		public_id: String
+	}
 	// posts: [{
 	// 	type: mongoose.Schema.Types.ObjectId,
 	// 	ref: 'Post'

@@ -1,8 +1,10 @@
 const User = require('../models/user');
 const Post = require('../models/post');
 const passport = require('passport');
+const util = require('util');
+const { deleteProfileImage } = require('../middleware');
+const { cloudinary } = require('../cloudinary');	  						   
 let mapBoxToken = process.env.MAPBOX_API_KEY
-
 
 module.exports = {
 	
@@ -19,11 +21,12 @@ module.exports = {
 		let newUser = new User({
 			username: req.body.username,
 			email: req.body.email,
-			image: req.body.image,
 		})
+		if(req.file) newUser.image = { secure_url: req.file.secure_url, public_id: req.file.public_id}
+		
 		try{
 			let newguy = await User.register(newUser, req.body.password);
-			console.log(newguy, 'from postregister controller');
+			
 			req.login(newguy, function(err){
 				if(err){ return next(err)}
 				req.session.success = `Welcome to Surf-Shop, ${newguy.username}`
@@ -31,6 +34,7 @@ module.exports = {
 			})
 		}
 		catch(err){
+			deleteProfileImage(req)
 			let error
 			if(err.errmsg){
 				if(err.errmsg.includes('duplicate') && err.errmsg.includes('index: email_1 dup key')){
@@ -62,7 +66,6 @@ module.exports = {
 		req.login(user, function(err){
 			if(err) return next(err);
 			req.session.success = `Welcome back, ${username}!`
-			console.log(req.session.redirectTo ,'from the post login controller')
 			const redirectUrl = req.session.redirectTo || '/posts'
 			delete req.session.redirectTo
 			res.redirect(redirectUrl);
@@ -77,8 +80,27 @@ module.exports = {
 	
 	async getProfile(req,res,next){
 		let posts = await Post.find().where('author').equals(req.user._id).limit(50).exec()
-		res.render('profile', { posts })
-	}
+		let user = await User.findById(req.user._id)
+		res.render('profile', { posts, user })
+	},
 	
+	async updateProfile(req,res,next){
+		const { username, email } = req.body
+		const { user } = res.locals
+		if(username) user.username = username
+		if(email) user.email = email
+		
+		if(req.file){
+			if(user.image.public_id) await cloudinary.uploader.destroy(user.image.public_id)
+			const { secure_url, public_id } = req.file
+			user.image = { secure_url, public_id}
+		}
+		
+		await user.save()
+		const login = util.promisify(req.login.bind(req));
+		await login(user)
+		req.session.success = 'Profile successfully updated!';
+		res.redirect('/profile');
+	},
 	
 }

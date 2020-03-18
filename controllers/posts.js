@@ -33,7 +33,6 @@ module.exports = {
 // 			req.body.lat = result.features[0].geometry.coordinates[0];
 // 			req.body.lng = result.features[0].geometry.coordinates[1];
 		
-
 				let response = await geocoder.forwardGeocode({
 									query: req.body.location,
 									limit: 1
@@ -139,7 +138,7 @@ module.exports = {
 	async postDelete(req,res,next){
 		// let post = await Post.findById(req.params.id)
 		let post = res.locals.foundPost
-		eval(require('locus'))
+		
 		for(let image of post.image){
 			await cloudinary.uploader.destroy(image.public_id)
 		}
