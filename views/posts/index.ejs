@@ -3,7 +3,17 @@
 	Posts Index!!!
 </h1>
 
-<div id='map'></div>
+
+<div class="container-fluid">
+       <div class="row">
+               <div class="col-4">
+                       <% include ../partials/searchFilter %>
+               </div>
+               <div class="col-8">
+                       <div id="map"></div>
+               </div>
+       </div>
+</div>
 
 <% include ../partials/pagination %>
 
@@ -24,3 +34,5 @@ mapboxgl.accessToken = '<%= mapBoxToken %>'
 </script>
 
 <script src='/javascripts/allPostsClusterMap.js'></script>
+
+<script src='/javascripts/post-index.js'></script>
