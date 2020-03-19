@@ -3,12 +3,22 @@ const passport = require('passport');
 const router = express.Router();
 const multer = require('multer')
 const { profileStorage } = require('../cloudinary');
-const { postRegister, postLogin, postLogout, landingPage, getRegister, getLogin, getProfile, updateProfile } = require('../controllers');
+const { postRegister, 
+	   postLogin, 
+	   postLogout, 
+	   landingPage, 
+	   getRegister, 
+	   getLogin, 
+	   getProfile, 
+	   updateProfile,
+	   getForgotPw,
+	   putForgotPw,
+	   getReset,
+	   putReset
+	  } = require('../controllers');
 const { asyncErrorHandler, isLoggedIn, isValidPassword, changePassword  } = require('../middleware');
 const upload = multer({ storage: profileStorage }).single('image')
-const crypto = require('crypto');
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
 
 
 /* GET home page. */
@@ -37,24 +47,16 @@ router.get('/profile', isLoggedIn, asyncErrorHandler(getProfile));
 router.put('/profile/:userid', isLoggedIn, upload, asyncErrorHandler(isValidPassword), asyncErrorHandler(changePassword), asyncErrorHandler(updateProfile));
 
 // forgot password 
-router.get('/forgot', (req, res, next) => {
-  res.send('password forgot');
-});
+router.get('/forgot-password', getForgotPw);
 
 // Send user details for password update
-router.put('/forgot', (req, res, next) => {
-  res.send('password again');
-});
+router.put('/forgot-password', asyncErrorHandler(putForgotPw));
 
 // token for password reset
-router.get('/reset/:token', (req, res, next) => {
-  res.send('reset password with token');
-});
+router.get('/reset/:token', asyncErrorHandler(getReset));
 
 // update password
-router.put('/reset/:token', (req, res, next) => {
-  res.send('update password');
-});
+router.put('/reset/:token', asyncErrorHandler(putReset));
 
 
 
