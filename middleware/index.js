@@ -2,6 +2,13 @@ const Review = require('../models/review');
 const User = require('../models/user');
 const Post = require('../models/post');
 const { cloudinary } = require('../cloudinary');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapBoxToken = process.env.MAPBOX_API_KEY;
+const geocodingClient = mbxGeocoding({ accessToken: mapBoxToken });
+
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
 
 const middleware = {
 	asyncErrorHandler: (fn) => 
@@ -75,8 +82,86 @@ const middleware = {
 			next()
 		}
 	},
+	
 	async deleteProfileImage(req){
 		if(req.file) await cloudinary.uploader.destroy(req.file.public_id)
+	},
+	
+	async searchAndFilterPosts(req,res,next){
+		const queryKeys = Object.keys(req.query);
+		
+		if(queryKeys.length){
+			
+			const dbQueries = []
+			let { search, avgRating, location, price, distance } = req.query
+			
+			if(search){
+				search = new RegExp(escapeRegExp(search), 'gi');
+				dbQueries.push({ $or: [
+					{title: search},
+					{description: search},
+					{location: search}
+				]})
+			}
+			
+			if(avgRating){
+				dbQueries.push({ avgRating: { $in: avgRating} })	
+			}
+			
+			if(location){
+				let coordinates
+				try{
+						if(typeof JSON.parse(location) === 'number') {
+							throw new Error;
+						}
+						location = JSON.parse(location)
+						coordinates = location
+				} catch(err){
+					let response = await geocodingClient.forwardGeocode({
+									query: location,
+									limit: 1
+									})
+									.send()
+					const match = response.body
+					coordinates  = match.features[0].geometry.coordinates
+				}
+				 
+					 let maxDistance = distance  || 25
+					 
+					 maxDistance *= 1000
+					 
+				
+					 dbQueries.push({ geometry: {
+						$near: {
+							$geometry: {
+								type: 'Point',
+								coordinates
+							},
+							$maxDistance: maxDistance
+						} 
+					 }})
+			}
+			
+			if(price){
+				if(price.min) dbQueries.push({ price: { $gte: price.min }});
+				if (price.max) dbQueries.push({ price: { $lte: price.max } });
+			}
+			
+			res.locals.dbQuery = dbQueries.length ? { $and: dbQueries} : {}
+			
+			
+		}
+		
+		res.locals.query = req.query
+		
+		queryKeys.splice(queryKeys.indexOf('page'), 1);
+		
+		const delimiter = queryKeys.length ? '&' : '?';
+		
+		res.locals.paginateUrl = req.originalUrl.replace(/(\?|\&)page=\d+/g, '') + `${delimiter}page=`;
+		
+		
+		next()
 	}
 };
 

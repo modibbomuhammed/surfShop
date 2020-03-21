@@ -17,7 +17,7 @@ module.exports = {
 			sort: { '_id': -1} // '-_id'
 		})
 		posts.page = Number(posts.page)
-		
+		// eval(require('locus'))
 		if(!posts.docs.length && req.query.search){
 			res.locals.error = 'No results match that query.'
 		}

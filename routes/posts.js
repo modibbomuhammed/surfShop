@@ -24,7 +24,7 @@ const upload = multer({ storage }).array('image',4); // adding this to utilise m
 // }).array('image', 4)
 
 
-const { asyncErrorHandler, isLoggedIn, isAuthor } = require('../middleware');
+const { asyncErrorHandler, isLoggedIn, isAuthor, searchAndFilterPosts } = require('../middleware');
 const { 
 	getPosts, 
 	newPost, 
@@ -37,7 +37,7 @@ const {
 
 
 /* GET post index  /post. */
-router.get('/', asyncErrorHandler(getPosts));
+router.get('/', asyncErrorHandler(searchAndFilterPosts), asyncErrorHandler(getPosts));
 
 // Get /new
 router.get('/new', isLoggedIn, newPost);
