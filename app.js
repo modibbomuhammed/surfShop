@@ -79,6 +79,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'))
 
 
+app.locals.moment = require('moment');
+
+
 app.use(passport.initialize())
 app.use(passport.session())
 // CHANGE: USE "createStrategy" INSTEAD OF "authenticate"
