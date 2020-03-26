@@ -25,7 +25,7 @@ const app = express();
 
 // conect to mongodb
 mongoose.set('useCreateIndex', true);
-mongoose.connect('mongodb://localhost:27017/surfshopapp', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
 .then(()=> console.log('connected to the db'))
 .catch((err)=> console.log(`failed to connnect due to ${err}`))
 
