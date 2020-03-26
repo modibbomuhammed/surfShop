@@ -34,6 +34,11 @@ async function seedPosts() {
 				coordinates: [cities[random1000].longitude, cities[random1000].latitude],
 			},
 			author: "5e68f90edfffd840396c9360",
+			image: [
+				{
+					url: 'https://res.cloudinary.com/devsprout/image/upload/v1561315599/surf-shop/surfboard.jpg'
+				}
+			],
 			avgRating: random5,
 			price: random1000
 		}
